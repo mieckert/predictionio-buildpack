@@ -263,16 +263,10 @@ Engine deployments honor the following config vars:
 
 ## Running commands
 
-`pio` commands that require DB access will need to have the driver specified as an argument (bug with PIO 0.9.5 + Spark 1.6.1):
-
-```bash
-pio $command -- --driver-class-path /app/lib/postgresql_jdbc.jar
-```
-
 #### To run directly with Heroku CLI
 
 ```bash
-heroku run "cd pio-engine && pio $command -- --driver-class-path /app/lib/postgresql_jdbc.jar"
+heroku run pio $command
 ```
 
 #### Useful commands
@@ -280,6 +274,14 @@ heroku run "cd pio-engine && pio $command -- --driver-class-path /app/lib/postgr
 Check engine status:
 
 ```bash
-heroku run "cd pio-engine && pio status -- --driver-class-path /app/lib/postgresql_jdbc.jar"
+heroku run pio status
+```
+
+#### Fix for database connectivity with PredictionIO 0.9 
+
+`pio` commands that require DB access will need to have the driver specified as an argument (bug with PIO 0.9.5 + Spark 1.6.1):
+
+```bash
+pio $command -- --driver-class-path /app/lib/postgresql_jdbc.jar
 ```
 
