@@ -64,22 +64,21 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 if [ $(requires_apache_predictionio "$BUILD_DIR/template.json") ]
 then
-  topic "Detected Apache PredictionIO template (>= 0.10)"
-  # Original build for PredictionIO 0.9.5
-  PIO_VERSION=0.10.0
-  PIO_BUILD=PredictionIO-${PIO_VERSION}-incubating
+  PIO_VERSION=0.10.0-incubating
   SPARK_VERSION=spark-1.6.2-bin-hadoop2.6
   # No special PostgreSQL driver is required
   POSTGRESQL_DRIVER=''
+  echo "Using Apache PredictionIO ${PIO_VERSION}" | indent
 else
-  topic "Detected old PredictionIO template (<= 0.9)"
   mkdir -p "$BUILD_DIR/.heroku"
   echo '# Presence of this file indicates a pre-Apache engine (<= 0.9)' > "$BUILD_DIR/.heroku/.is_old_predictionio"
   PIO_VERSION=0.9.5
-  PIO_BUILD=PredictionIO-${PIO_VERSION}
   SPARK_VERSION=spark-1.6.2-bin-hadoop2.6
   POSTGRESQL_DRIVER=postgresql-9.4.1209.jar
+  echo "Using PredictionIO $PIO_VERSION" | indent
 fi
+
+PIO_BUILD=PredictionIO-${PIO_VERSION}
 
 
 # PredictionIO dist tarball URL, expects `.tar.gz` 
