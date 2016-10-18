@@ -30,10 +30,16 @@ function indent() {
 # returns 'true', and otherwise '' (empty string)
 requires_apache_predictionio() {
   local template_json=$1
-  cat $template_json | ruby \
-    -E utf-8:utf-8 \
-    -r json \
-    -e "version = JSON.parse(STDIN.read)['pio']['version']['min']; major,minor = version.split('.').map(&:to_i); STDOUT << (major>=0 && minor>=10 ? 'true' : '')"
+  if [ -e $template_json ]
+  then
+    cat $template_json | ruby \
+      -E utf-8:utf-8 \
+      -r json \
+      -e "version = JSON.parse(STDIN.read)['pio']['version']['min']; major,minor = version.split('.').map(&:to_i); STDOUT << (major>=0 && minor>=10 ? 'true' : '')"
+  else
+    # without a template file, assume we're build the eventserver on the newest version
+    echo 'true'
+  fi
 }
 
 export_env_dir() {
