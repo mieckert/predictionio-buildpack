@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+        <property>
+                <name>fs.default.name</name>
+                <value>s3n://<%= ENV["PIO_S3_BUCKET_NAME"] %></value>
+        </property>
+        <property>
+                <name>fs.s3n.awsAccessKeyId</name>
+                <value><%= ENV["PIO_S3_AWS_ACCESS_KEY_ID"] %></value>
+        </property>
+        <property>
+                <name>fs.s3n.awsSecretAccessKey</name>
+                <value><%= ENV["PIO_S3_AWS_SECRET_ACCESS_KEY"] %></value>
+        </property>
+</configuration>
