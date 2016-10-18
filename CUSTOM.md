@@ -1,4 +1,4 @@
-# Heroku buildpack for [PredictionIO](http://predictionio.incubator.apache.org) 0.9.5
+# Heroku buildpack for [PredictionIO](http://predictionio.incubator.apache.org)
 
 👓 Requires intermediate technical skills working with PredictionIO engines.
 
@@ -75,7 +75,7 @@ heroku pg:wait && git push heroku master
 
 Select an engine from the [gallery](https://predictionio.incubator.apache.org/gallery/template-gallery/). Download a `.tar.gz` from Github and open/expand it on your local computer.
 
-🏷 This buildpack is compatible with templates built for **PredictionIO version 0.9**
+🏷 This buildpack is compatible with templates built for **PredictionIO version 0.9 & 0.10**. The appropriate version of PredictionIO will be automatically use based on the version declared in `template.json`.
 
 🚨 Avoid engines that persist their model to the filesystem, which is incompatible with the [emphermeral filesystem](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem) of Heroku dynos. These engines must be modified to use Amazon S3 or the database for persistence. 
 
@@ -277,7 +277,7 @@ Check engine status:
 heroku run pio status
 ```
 
-#### Fix for database connectivity with PredictionIO 0.9 
+#### Fix for database connectivity with PredictionIO 0.9.5
 
 `pio` commands that require DB access will need to have the driver specified as an argument (bug with PIO 0.9.5 + Spark 1.6.1):
 

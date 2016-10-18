@@ -2,7 +2,7 @@
 
 Predictive classification powered by [PredictionIO](https://predictionio.incubator.apache.org), machine learning on [Heroku](http://www.heroku.com).
 
-This is a demo application of PredictionIO version 0.9.5 preset for simplified deployment. **Custom PredictionIO engines** may be deployed as well, see [CUSTOM documentation](CUSTOM.md).
+This is a demo application of PredictionIO preset for simplified deployment. **Custom PredictionIO engines** may be deployed as well, see [CUSTOM documentation](CUSTOM.md).
 
 Once deployed, this engine demonstrates prediction of the best fitting **service plan** for a **mobile phone user** based on their **voice, data, and text usage**. The model is trained with a small, example data set.
 
