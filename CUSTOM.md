@@ -95,13 +95,19 @@ heroku buildpacks:add -i 2 https://github.com/heroku/predictionio-buildpack.git
 
 #### Optional Persistent Filesystem
 
-If you need filesystem persistence for the model or to access file-based data, use the Amazon S3 Add-on:
+👓 Heroku dynos have an [ephemeral filesystem](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem).
 
-```bash
-heroku addons:create bucketeer --as PIO_S3
-```
+For engines that require filesystem persistence, this buildpack supports [HDFS](https://en.wikipedia.org/wiki/Apache_Hadoop#HDFS) on [Amazon S3](https://aws.amazon.com/s3/).
 
-Alternatively, bring your own bucket by manually setting the [`PIO_S3_*` config vars](#environment-variables).
+To enable, either:
+
+* use the [S3 Add-on](https://devcenter.heroku.com/articles/bucketeer) ($5/month minimum cost)
+
+  ```bash
+  heroku addons:create bucketeer --as PIO_S3
+  ```
+* bring your own [s3 bucket](https://aws.amazon.com/s3/) by manually setting the [`PIO_S3_*` config vars](#environment-variables).
+
 
 ### Create a PredictionIO app in the eventserver
 
