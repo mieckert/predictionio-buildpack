@@ -145,7 +145,7 @@ heroku logs -t --app $engine_name
 
 ## Scale up
 
-Once deployed, scale up the processes to avoid memory issues:
+Once deployed, scale up the processes and config Spark to avoid memory issues:
 
 ```bash
 heroku ps:scale \
@@ -153,6 +153,11 @@ heroku ps:scale \
   release=0:Performance-L \
   train=0:Performance-L \
   --app $engine_name
+
+# Fit Spark memory usage to those dyno types
+heroku config:set \
+  PIO_SPARK_OPTS='--executor-memory 768m' \
+  PIO_TRAIN_SPARK_OPTS='--executor-memory 10g'
 ```
 
 
