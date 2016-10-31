@@ -38,7 +38,7 @@ PIO_SPARK_OPTS=${PIO_SPARK_OPTS:-}
 if [ ! "$(already_has_memory_opts $PIO_SPARK_OPTS)" ]
 then
   export PIO_SPARK_OPTS="$default_spark_opts $PIO_SPARK_OPTS"
-  echo "autoset memory params in PIO_SPARK_OPTS: $PIO_SPARK_OPTS"
+  echo "Autoset Spark memory params for web process: $PIO_SPARK_OPTS"
 fi
 
 PIO_TRAIN_SPARK_OPTS=${PIO_TRAIN_SPARK_OPTS:-}
@@ -46,5 +46,5 @@ PIO_TRAIN_SPARK_OPTS=${PIO_TRAIN_SPARK_OPTS:-}
 if [ ! "$(already_has_memory_opts $PIO_TRAIN_SPARK_OPTS)" ]
 then
   export PIO_TRAIN_SPARK_OPTS="$default_spark_opts $PIO_TRAIN_SPARK_OPTS"
-  echo "autoset memory params in PIO_TRAIN_SPARK_OPTS: $PIO_TRAIN_SPARK_OPTS"
+  echo "Autoset Spark memory params for training: $PIO_TRAIN_SPARK_OPTS"
 fi
