@@ -8,14 +8,75 @@
     "sparkml"
   ],
   "addons": [
-    "heroku-postgresql"
+    {
+      "plan": "bucketeer",
+      "as": "PIO_S3"
+    },
+    {
+      "plan": "heroku-postgresql"
+    }
   ],
+  "env": {
+    "PIO_PROXY_BASIC_AUTH": {
+      "description": "HTTP basic auth for the eventserver. Engine does not require auth. Format 'username:{PLAIN}password'.",
+      "value": "pio:{PLAIN}science4LIFE",
+      "required": true
+    },
+    "PIO_SINGULARITY": {
+      "description": "Engine & eventserver will be deployed as a single unified app behind a web proxy. Required for button deploys & app setups.",
+      "value": "true",
+      "required": true
+    },
+    "PIO_EVENTSERVER_HOSTNAME": {
+      "description": "Local eventserver hostname. Required for button deploys & app setups.",
+      "value": "localhost",
+      "required": true
+    },
+    "PIO_EVENTSERVER_PORT": {
+      "description": "Local eventserver port. Required for button deploys & app setups.",
+      "value": "7070",
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "Performance-M"
+    },
+    "train": {
+      "quantity": 1,
+      "size": "Performance-L"
+    },
+    "release": {
+      "quantity": 1,
+      "size": "Performance-L"
+    }
+  },
   "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-addon-wait.git"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-space-proxy.git"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-jvm-common.git"
+    },
     {
       "url": "https://github.com/heroku/predictionio-buildpack.git"
     },
     {
       "url": "heroku/scala"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-runit.git"
     }
   ]
 }
+
+heroku buildpacks:add -i 1 https://github.com/heroku/heroku-buildpack-addon-wait.git
+heroku buildpacks:ass -i 2 https://github.com/heroku/heroku-buildpack-space-proxy.git
+heroku buildpacks:add -i 3 https://github.com/heroku/heroku-buildpack-jvm-common.git
+heroku buildpacks:add -i 4 https://github.com/heroku/predictionio-buildpack.git
+heroku buildpacks:add -i 5 heroku/scala
+heroku buildpacks:add -i 6 https://github.com/heroku/heroku-buildpack-runit.git

@@ -61,6 +61,8 @@ CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
+export_env_dir "$ENV_DIR" '^PIO_SINGULARITY$'
+PIO_SINGULARITY=${PIO_SINGULARITY:-}
 
 export_env_dir "$ENV_DIR" '^PIO_BUILD_SPARK_VERSION$'
 SPARK_VERSION="spark-${PIO_BUILD_SPARK_VERSION:-1.6.2}-bin-hadoop2.6"
@@ -127,43 +129,78 @@ cp "$BP_DIR/config/core-site.xml.erb" "$dist_dir/conf/"
 topic "Set-up PredictionIO environment"
 mkdir -p "$BUILD_DIR/.profile.d"
 cp -r .profile.d/* "$BUILD_DIR/.profile.d/" | indent
+
 # Load the env for the following build steps
 export_env_dir "$ENV_DIR" '^DATABASE_URL$'
 source .profile.d/pio-path.sh
 
+addon_wait="${BUILD_DIR}/bin/addon-wait"
+if [ -f "${addon_wait}" ]
+then
+  echo "Waiting for PostgreSQL database connection…" | indent
+  eval "${addon_wait}"
+  echo "Connected to database" | indent
+else
+  echo "Not waiting for database. (Add 'heroku-buildpack-addon-wait' to wait for database.)" | indent
+fi
+
 if [ -f "${BUILD_DIR}/engine.json" ]
 then
-  topic "Build PredictionIO engine"
+  topic "Build PredictionIO engine (found `engine.json`)"
   # Move to dyno-compatible prefix for `pio build`
   mv $BUILD_DIR/* $app_prefix
   cd $app_prefix
   $dist_name/bin/pio build --verbose | indent
 
-  topic "Clean-up build artifacts"
+  echo "Clean-up build artifacts" | indent
   # Try to keep slug below 300MB limit.
   # This is based on profiling with
   # `du -a "${BUILD_DIR}" | sort -n -r | head -n 50`
   # and removing big objects that seem unnecessary.
   rm -rf "target/streams" || true
 
-  topic "Moving build artifacts into place"
+  topic "Set-up runtime"
   # After PIO build at the runtime prefix, move the engine into the slug
   mv $app_prefix $BUILD_DIR
-  # Move the Procfile back to the top-level app directory or use default for engines
-  # (`bin/release` default_process_types have no effect since this is never the last buildpack)
-  if [ -f "${BUILD_DIR}/${app_namespace}/Procfile" ]
+
+  # Decide which way to run: singularity, engine, or eventserver.
+  if [ "$PIO_SINGULARITY" = "true" ]
   then
+    echo "Singularity: engine, eventserver, & web proxy" | indent
+    # Setup Procfiles to use runit for engine + eventserver + proxy
+    echo "configure Procfiles" | indent
+    mv "${BP_DIR}/Procfile-singularity" "${BUILD_DIR}/Procfile"
+    mv "${BP_DIR}/Procfile.*" "${BUILD_DIR}/"
+    echo "configure Nginx web proxy" | indent
+    nginx_conf_dir="${BUILD_DIR}/space-proxy/nginx/conf"
+    mkdir -p $nginx_conf_dir
+    mv "${BP_DIR}/htpasswd.erb" $nginx_conf_dir
+    mv "${BP_DIR}/nginx.conf.erb" $nginx_conf_dir
+    echo "prepare eventserver Scala build" | indent
+    engine_dist_dir="$BUILD_DIR/${app_namespace}/${dist_name}"
+    cp -r "$BUILD_DIR/${app_namespace}/${dist_name}" "$BUILD_DIR"
+    mv "${BP_DIR}/project" "$BUILD_DIR"
+    mv "${BP_DIR}/build.sbt" "$BUILD_DIR"
+
+  elif [ -f "${BUILD_DIR}/${app_namespace}/Procfile" ]
+  then
+    echo "Engine with custom Procfile" | indent
+    # Move the Procfile back to the top-level app directory.
+    # (`bin/release` default_process_types have no effect since this is never the last buildpack)
     mv "${BUILD_DIR}/${app_namespace}/Procfile" $BUILD_DIR
+
   else
+    echo "Engine with default Procfile" | indent
+    # Use default Procfile for an engine
     mv "${BP_DIR}/Procfile-engine" "${BUILD_DIR}/Procfile"
   fi
 
-  topic "Set-up train on release (disable with PIO_TRAIN_ON_RELEASE=false)"
+  echo "Set-up train on release (disable with PIO_TRAIN_ON_RELEASE=false)" | indent
   mkdir -p "$BUILD_DIR/bin"
   cp $BP_DIR/bin/engine/heroku-* "$BUILD_DIR/bin/"
 
 else
-  echo 'No engine to build. (`engine.json` does not exist.)' | indent
+  topic "Continuing as PredictionIO eventserver (no `engine.json`)"
 fi
 
 if [ "$POSTGRESQL_DRIVER" ]

@@ -15,10 +15,7 @@ Once deployed, this engine demonstrates prediction of the best fitting **service
 Please follow steps in order.
 
 1. [Requirements](#1-requirements)
-1. [Eventserver](#2-eventserver)
-  1. [Create the eventserver](#create-the-eventserver)
-  1. [Deploy the eventserver](#deploy-the-eventserver)
-1. [Classification engine](#3-classification-engine)
+1. [Deploy to Heroku](#2-deploy-to-heroku)
   1. [Create the engine](#create-the-engine)
   1. [Connect the engine with the eventserver](#connect-the-engine-with-the-eventserver)
   1. [Import data](#import-data)
@@ -41,29 +38,29 @@ Once deployed, how to work with the engine.
 * [Heroku CLI](https://toolbelt.heroku.com), command-line tools
 * [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-## 2. Eventserver
-
-### Create the eventserver
+## 2. Deployment
 
 ```bash
 git clone \
-  https://github.com/heroku/predictionio-buildpack.git \
-  pio-eventserver
+  https://github.com/heroku/predictionio-engine-classification.git \
+  pio-engine-classi
 
-cd pio-eventserver
+cd pio-engine-classi
 
 heroku create $eventserver_name
 heroku addons:create heroku-postgresql:hobby-dev
-heroku buildpacks:add -i 1 https://github.com/heroku/predictionio-buildpack.git
-heroku buildpacks:add -i 2 heroku/scala
+heroku buildpacks:add -i 1 https://github.com/heroku/heroku-buildpack-addon-wait.git
+heroku buildpacks:ass -i 2 https://github.com/heroku/heroku-buildpack-space-proxy.git
+heroku buildpacks:add -i 3 https://github.com/heroku/heroku-buildpack-jvm-common.git
+heroku buildpacks:add -i 4 https://github.com/heroku/predictionio-buildpack.git
+heroku buildpacks:add -i 5 heroku/scala
+heroku buildpacks:add -i 6 https://github.com/heroku/heroku-buildpack-runit.git
 ```
 
 ### Deploy the eventserver
 
-We delay deployment until the database is ready.
-
 ```bash
-heroku pg:wait && git push heroku master
+git push heroku master
 ```
 
 
