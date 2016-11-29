@@ -107,11 +107,13 @@ topic "Fetch distribution of PredictionIO"
 curl -o "${dist_name}.tar.gz" -S "$url"
 mkdir -p "$dist_dir"
 tar -xz -f "${dist_name}.tar.gz" -C "$dist_dir" --strip-components=1 | indent
+rm -f "${dist_name}.tar.gz"
 
 topic "Fetch distribution of Spark"
 curl -o "spark-hadoop.tar.gz" -S "http://marsikai.s3.amazonaws.com/${SPARK_VERSION}.tar.gz"
 mkdir -p "$dist_dir/vendors/spark-hadoop"
 tar -xz -f "spark-hadoop.tar.gz" -C "$dist_dir/vendors/spark-hadoop" --strip-components=1  | indent
+rm -f "spark-hadoop.tar.gz"
 
 topic "Configure PredictionIO"
 if [ -f "${custom_pio_env}" ]
