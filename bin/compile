@@ -174,3 +174,7 @@ then
   mkdir -p "${BUILD_DIR}/lib"
   curl -s -L "https://marsikai.s3.amazonaws.com/$POSTGRESQL_DRIVER" > "${BUILD_DIR}/lib/postgresql_jdbc.jar"
 fi
+
+echo "##################################"
+du ${BUILD_DIR}
+echo "##################################"
