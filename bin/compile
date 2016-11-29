@@ -178,5 +178,5 @@ fi
 echo "##################################"
 du ${BUILD_DIR}
 echo "##################################"
-ls ${BUILD_DIR}/PredictionIO-dist/vendors/spark-hadoop/lib
+ls -la ${BUILD_DIR}/PredictionIO-dist/vendors/spark-hadoop/lib
 echo "##################################"
